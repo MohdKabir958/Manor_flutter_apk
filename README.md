@@ -1,19 +1,13 @@
-# Mahogany Manor — Flutter Client Prototype
+# Mahogany Manor Flutter Prototype
 
-Interactive Flutter client demo for Mahogany Manor Bed & Breakfast.
+Demo Android app for https://www.mmanor.ca/.
 
-Screens: Home, About, Standard/Deluxe rooms, four room details, Gallery, Contact, dummy Login/Sign Up and booking enquiry.
+Includes Home, About, Rooms (Standard: Silhouette, Garden Chamber; Deluxe: Mahogany Rest, Cranberry Wine), room details, booking enquiry, gallery, contact and dummy login/sign-up.
 
-This prototype uses mock content and simulated forms; no bookings, accounts or messages are saved or sent.
+All login, booking and contact operations are simulated. Room prices are not live. Illustrative remotely hosted images need client approval and correct room matching before production.
 
-## Build APK
+## APK
 
-Run the GitHub Actions workflow **Build Mahogany Manor Demo APK** on `main`, or use Flutter locally:
+Open GitHub **Actions** → **Build Mahogany Manor Demo APK** → Run workflow. Download the `Mahogany-Manor-Demo-APK` artifact from a successful run.
 
-```bash
-flutter create --project-name mahogany_manor_prototype --platforms android .
-flutter pub get
-flutter build apk --release
-```
-
-See the full README in the project source for implementation details.
+Local commands: `flutter create --platforms android .`, `flutter pub get`, `flutter build apk --release`.

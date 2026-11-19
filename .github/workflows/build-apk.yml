@@ -1,0 +1,31 @@
+name: Build Mahogany Manor Demo APK
+on:
+  workflow_dispatch:
+  push:
+    branches: [main]
+jobs:
+  android:
+    runs-on: ubuntu-latest
+    permissions:
+      contents: read
+    steps:
+      - uses: actions/checkout@v4
+      - uses: subosito/flutter-action@v2
+        with:
+          channel: stable
+      - run: flutter create --project-name mahogany_manor_prototype --platforms android .
+      - run: flutter pub get
+      - name: Add network permission
+        run: |
+          python3 - <<'PY'
+          from pathlib import Path
+          p=Path('android/app/src/main/AndroidManifest.xml')
+          s=p.read_text().replace('<application','<uses-permission android:name="android.permission.INTERNET" />\n    <application',1)
+          p.write_text(s)
+          PY
+      - run: flutter build apk --release
+      - uses: actions/upload-artifact@v4
+        with:
+          name: Mahogany-Manor-Demo-APK
+          path: build/app/outputs/flutter-apk/app-release.apk
+          if-no-files-found: error
