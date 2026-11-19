@@ -155,7 +155,7 @@ class ManorTextField extends StatelessWidget {
  final String label;final TextEditingController controller;final bool email,required;final int lines;
  const ManorTextField({super.key,required this.label,required this.controller,this.email=false,this.required=true,this.lines=1});
  @override Widget build(BuildContext c)=>Padding(padding:const EdgeInsets.only(bottom:14),child:TextFormField(
-  controller:controller,maxLines:lines,keyboardType:email?TextInputType.email:lines>1?TextInputType.multiline:TextInputType.text,
+  controller:controller,maxLines:lines,keyboardType:email?TextInputType.emailAddress:lines>1?TextInputType.multiline:TextInputType.text,
   decoration:InputDecoration(labelText:label),
   validator:(v){if(required&&(v==null||v.trim().isEmpty))return 'Please enter '+label;if(email&&v!=null&&!RegExp(r'^[^@\s]+@[^@\s]+\.[^@\s]+$').hasMatch(v.trim()))return 'Enter a valid email';return null;}
  ));
