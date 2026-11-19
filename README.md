@@ -1,13 +1,28 @@
-# Mahogany Manor Flutter Prototype
+# Mahogany Manor — Website-Driven Flutter Client Demo
 
-Demo Android app for https://www.mmanor.ca/.
+This is an interactive Android Flutter demo inspired by the public website: https://www.mmanor.ca/.
 
-Includes Home, About, Rooms (Standard: Silhouette, Garden Chamber; Deluxe: Mahogany Rest, Cranberry Wine), room details, booking enquiry, gallery, contact and dummy login/sign-up.
+## Design
+- Dark charcoal overlays, clean white sections and teal calls-to-action
+- Mobile-friendly header, script-style logotype, hero images and reusable card styles
+- Responsive, consistent spacing, readable headings and amenity icons
+- Designed as an *adaptation* of the website, not a claim of pixel-exact reproduction
 
-All login, booking and contact operations are simulated. Room prices are not live. Illustrative remotely hosted images need client approval and correct room matching before production.
+## Covered screens
+Home, About Us, Our Rooms, Standard category (Silhouette and Garden Chamber), Deluxe category (Mahogany Rest and Cranberry Wine), room detail, Gallery + image viewer, Contact, dummy Login/Sign Up, and demo booking enquiry.
 
-## APK
+## Important prototype restrictions
+- No backend integration, live booking, payments, login accounts or contact delivery
+- Sample prices require confirmation by the property
+- Remote property photos used for illustration; some may not match the specific room. Obtain approved exact photographs and branding from the client.
+- The source code has not been validated on a device until the CI build and walkthrough pass
 
-Open GitHub **Actions** → **Build Mahogany Manor Demo APK** → Run workflow. Download the `Mahogany-Manor-Demo-APK` artifact from a successful run.
+## APK build
+GitHub Actions → Build Mahogany Manor Demo APK → Run workflow. Download the Mahogany-Manor-Demo-APK artifact after a successful run.
 
-Local commands: `flutter create --platforms android .`, `flutter pub get`, `flutter build apk --release`.
+Local Flutter commands:
+```bash
+flutter create --project-name mahogany_manor_prototype --platforms android .
+flutter pub get
+flutter build apk --release
+```

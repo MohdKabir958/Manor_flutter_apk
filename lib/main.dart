@@ -1,35 +1,78 @@
 import 'package:flutter/material.dart';
-const burgundy=Color(0xff713b4d),ivory=Color(0xfffaf6f0);
-class Room {final String name,category,description;final int price,photo;const Room(this.name,this.category,this.description,this.price,this.photo);}
-const rooms=[
-Room('Silhouette','Standard','Antique four-poster queen bed, natural light and ensuite bathroom.',130,0),
-Room('Garden Chamber','Standard','Hardwood floors, antique furnishings, queen bed and ensuite shower.',130,1),
-Room('Mahogany Rest','Deluxe','King bed, bay window, elegant heritage furnishings and ensuite shower.',140,2),
-Room('Cranberry Wine','Deluxe','Romantic queen room, ensuite shower and a private garden deck.',140,3)];
-const pics=['https://dynamic-media-cdn.tripadvisor.com/media/photo-o/1b/23/8b/a7/mahogany-manor-bed-and.jpg?h=500&s=1&w=900','https://dynamic-media-cdn.tripadvisor.com/media/photo-o/19/a4/7e/fc/habitacion.jpg?h=1200&s=1&w=1200','https://dynamic-media-cdn.tripadvisor.com/media/photo-o/23/52/f6/df/caption.jpg?h=1100&s=1&w=1100','https://content.skyscnr.com/available/2123884335/2123884335_WxH.jpg'];
-void main()=>runApp(MaterialApp(debugShowCheckedModeBanner:false,title:'Mahogany Manor Demo',theme:ThemeData(useMaterial3:true,colorScheme:ColorScheme.fromSeed(seedColor:burgundy),scaffoldBackgroundColor:ivory),home:const Shell()));
-Widget image(int n)=>SizedBox(height:200,width:double.infinity,child:Image.network(pics[n%pics.length],fit:BoxFit.cover,errorBuilder:(_,__,___)=>const ColoredBox(color:burgundy,child:Center(child:Icon(Icons.hotel,color:Colors.white,size:55)))));
-void open(BuildContext c,Widget p)=>Navigator.push(c,MaterialPageRoute(builder:(_)=>p));
-Widget title(String s)=>Padding(padding:const EdgeInsets.all(16),child:Text(s,style:const TextStyle(fontSize:25,fontWeight:FontWeight.bold,color:burgundy)));
-Widget btn(String s,VoidCallback f)=>Padding(padding:const EdgeInsets.symmetric(vertical:8),child:FilledButton(onPressed:f,child:Padding(padding:const EdgeInsets.all(11),child:Text(s))));
-Widget input(String label,{int lines=1})=>Padding(padding:const EdgeInsets.only(bottom:12),child:TextFormField(maxLines:lines,decoration:InputDecoration(labelText:label,border:const OutlineInputBorder()),validator:(v)=>(v==null||v.trim().isEmpty)?'Required':null));
-class Shell extends StatefulWidget{const Shell({super.key});@override State<Shell> createState()=>_Shell();}
-class _Shell extends State<Shell>{int index=0;String? guest;
-@override Widget build(BuildContext c)=>Scaffold(body:SafeArea(child:IndexedStack(index:index,children:[home(c),roomGroups(c),gallery(c),const ContactPage(),account(c)])),bottomNavigationBar:NavigationBar(selectedIndex:index,onDestinationSelected:(i)=>setState(()=>index=i),destinations:const [NavigationDestination(icon:Icon(Icons.home_outlined),label:'Home'),NavigationDestination(icon:Icon(Icons.bed_outlined),label:'Rooms'),NavigationDestination(icon:Icon(Icons.photo_outlined),label:'Gallery'),NavigationDestination(icon:Icon(Icons.mail_outline),label:'Contact'),NavigationDestination(icon:Icon(Icons.person_outline),label:'Account')])));
-Widget home(BuildContext c)=>ListView(children:[image(0),title('Mahogany Manor'),const Padding(padding:EdgeInsets.all(16),child:Text('Discover heritage hospitality in the heart of Saint John, New Brunswick.')),Padding(padding:const EdgeInsets.all(16),child:btn('Explore Our Rooms',()=>setState(()=>index=1))),title('Our Accommodation'),...['Standard','Deluxe'].map((cat)=>ListTile(title:Text(cat+' Rooms'),subtitle:Text(cat=='Standard'?'From CAD 130/night':'From CAD 140/night'),trailing:const Icon(Icons.arrow_forward_ios),onTap:()=>open(c,CategoryPage(category:cat)))),Padding(padding:const EdgeInsets.all(16),child:btn('About Us',()=>open(c,const AboutPage())))]);
-Widget roomGroups(BuildContext c)=>ListView(children:[title('Choose Your Room'),...['Standard','Deluxe'].map((cat)=>Card(clipBehavior:Clip.antiAlias,margin:const EdgeInsets.all(12),child:InkWell(onTap:()=>open(c,CategoryPage(category:cat)),child:Column(children:[image(cat=='Standard'?1:2),ListTile(title:Text(cat+' Rooms'),subtitle:Text(cat=='Standard'?'Silhouette • Garden Chamber':'Mahogany Rest • Cranberry Wine'),trailing:const Icon(Icons.arrow_forward))])))]);
-Widget gallery(BuildContext c)=>ListView(children:[title('Photo Gallery'),...List.generate(pics.length,(i)=>Padding(padding:const EdgeInsets.all(9),child:InkWell(onTap:()=>open(c,Scaffold(appBar:AppBar(title:const Text('Gallery')),body:InteractiveViewer(child:Center(child:Image.network(pics[i]))))),child:image(i))))]);
-Widget account(BuildContext c)=>ListView(children:[title('Guest Account'),const Center(child:Icon(Icons.account_circle_outlined,size:100,color:burgundy)),Center(child:Text(guest??'Guest demo account')),Padding(padding:const EdgeInsets.all(20),child:btn(guest==null?'Login / Sign Up':'Sign Out',()=>guest==null?open(c,AuthPage(onLogin:(e)=>setState(()=>guest=e))):setState(()=>guest=null)))]);
+import 'manor_data.dart';
+import 'manor_style.dart';
+import 'manor_screens.dart';
+
+void main()=>runApp(const ManorApp());
+
+class ManorApp extends StatelessWidget {
+ const ManorApp({super.key});
+ @override Widget build(BuildContext context)=>MaterialApp(
+   debugShowCheckedModeBanner:false,
+   title:'Mahogany Manor | Bed & Breakfast',
+   theme:ManorStyle.theme(),
+   home:const ManorShell(),
+ );
 }
-class CategoryPage extends StatelessWidget{final String category;const CategoryPage({super.key,required this.category});@override Widget build(BuildContext c)=>Scaffold(appBar:AppBar(title:Text(category+' Rooms')),body:ListView(children:[...rooms.where((r)=>r.category==category).map((r)=>Card(margin:const EdgeInsets.all(12),clipBehavior:Clip.antiAlias,child:Column(children:[image(r.photo),ListTile(title:Text(r.name),subtitle:Text('CAD '+r.price.toString()+' / night'),onTap:()=>open(c,RoomPage(room:r))),Padding(padding:const EdgeInsets.symmetric(horizontal:15),child:btn('View Room',()=>open(c,RoomPage(room:r))))])))]));}
-class RoomPage extends StatelessWidget{final Room room;const RoomPage({super.key,required this.room});@override Widget build(BuildContext c)=>Scaffold(appBar:AppBar(title:Text(room.name)),body:ListView(children:[image(room.photo),title(room.name),Padding(padding:const EdgeInsets.all(18),child:Text(room.description+'\n\n'+room.category+' Room • CAD '+room.price.toString()+' / night\n\nAmenities: Ensuite bathroom, comfortable bed, heritage furnishings.',style:const TextStyle(fontSize:16,height:1.7))),Padding(padding:const EdgeInsets.all(18),child:btn('Request Booking',()=>open(c,BookingPage(room:room))))]));}
-class BookingPage extends StatefulWidget{final Room room;const BookingPage({super.key,required this.room});@override State<BookingPage> createState()=>_BookingPage();}
-class _BookingPage extends State<BookingPage>{DateTime? from,to;int guests=2;final key=GlobalKey<FormState>();
-Future<void> pick(bool first)async{final d=await showDatePicker(context:context,firstDate:DateTime.now(),lastDate:DateTime.now().add(const Duration(days:700)),initialDate:DateTime.now().add(const Duration(days:2)));if(d!=null)setState((){if(first){from=d;}else{to=d;}});}
-@override Widget build(BuildContext c)=>Scaffold(appBar:AppBar(title:const Text('Booking Enquiry')),body:Form(key:key,child:ListView(padding:const EdgeInsets.all(18),children:[title('Request '+widget.room.name),btn(from==null?'Choose Check-in':'Check-in: '+from.toString().split(' ')[0],()=>pick(true)),btn(to==null?'Choose Check-out':'Check-out: '+to.toString().split(' ')[0],()=>pick(false)),Row(children:[const Text('Guests'),IconButton(onPressed:guests>1?()=>setState(()=>guests--):null,icon:const Icon(Icons.remove)),Text(guests.toString()),IconButton(onPressed:()=>setState(()=>guests++),icon:const Icon(Icons.add))]),input('Name'),input('Email'),input('Phone'),input('Message',lines:3),btn('Submit Demo Enquiry',(){if(!key.currentState!.validate())return;if(from==null||to==null||!to!.isAfter(from!)){ScaffoldMessenger.of(c).showSnackBar(const SnackBar(content:Text('Select valid booking dates')));return;}open(c,const SuccessPage(message:'Booking enquiry simulated. No real reservation was placed.'));})])));}
-class ContactPage extends StatefulWidget{const ContactPage({super.key});@override State<ContactPage> createState()=>_ContactPage();}
-class _ContactPage extends State<ContactPage>{final key=GlobalKey<FormState>();@override Widget build(BuildContext c)=>Form(key:key,child:ListView(padding:const EdgeInsets.all(18),children:[title('Contact Us'),const Text('Mahogany Manor, 220 Germain Street, Saint John, New Brunswick, Canada'),const SizedBox(height:20),input('Full name'),input('Email'),input('Subject'),input('Message',lines:4),btn('Send Demo Message',(){if(key.currentState!.validate())open(c,const SuccessPage(message:'Message submitted in demo mode. No real email was sent.'));})]));}
-class AuthPage extends StatefulWidget{final ValueChanged<String> onLogin;const AuthPage({super.key,required this.onLogin});@override State<AuthPage> createState()=>_AuthPage();}
-class _AuthPage extends State<AuthPage>{bool signup=false;final key=GlobalKey<FormState>(),email=TextEditingController();@override void dispose(){email.dispose();super.dispose();}@override Widget build(BuildContext c)=>Scaffold(appBar:AppBar(title:Text(signup?'Sign Up':'Login')),body:Form(key:key,child:ListView(padding:const EdgeInsets.all(18),children:[title(signup?'Create Demo Account':'Welcome Back'),if(signup)input('Name'),TextFormField(controller:email,decoration:const InputDecoration(labelText:'Email',border:OutlineInputBorder()),validator:(v)=>v!=null&&v.contains('@')?null:'Enter valid email'),const SizedBox(height:15),input('Password'),btn(signup?'Create Account':'Login',(){if(key.currentState!.validate()){widget.onLogin(email.text);Navigator.pop(c);}}),TextButton(onPressed:()=>setState(()=>signup=!signup),child:Text(signup?'Already registered? Login':'New guest? Sign Up')),const Text('Demo only — no authentication server or account storage.')])));}
-class AboutPage extends StatelessWidget{const AboutPage({super.key});@override Widget build(BuildContext c)=>Scaffold(appBar:AppBar(title:const Text('About Us')),body:ListView(children:[image(0),title('Welcome to Mahogany Manor'),const Padding(padding:EdgeInsets.all(18),child:Text('Explore a beautifully historic bed and breakfast in Saint John, New Brunswick. Guests can discover individually styled rooms and the charm of this heritage property. This app is a client prototype.',style:TextStyle(fontSize:16,height:1.8)))]));}
-class SuccessPage extends StatelessWidget{final String message;const SuccessPage({super.key,required this.message});@override Widget build(BuildContext c)=>Scaffold(appBar:AppBar(title:const Text('Demo Confirmation')),body:Center(child:Padding(padding:const EdgeInsets.all(24),child:Column(mainAxisSize:MainAxisSize.min,children:[const Icon(Icons.check_circle_outline,size:90,color:burgundy),title('Success'),Text(message,textAlign:TextAlign.center),btn('Back',()=>Navigator.pop(c))]))));}
+
+class ManorShell extends StatefulWidget {
+ const ManorShell({super.key});
+ @override State<ManorShell> createState()=>_ManorShellState();
+}
+
+class _ManorShellState extends State<ManorShell> {
+ int selected=0;
+ String? signedInEmail;
+ void visit(Widget page)=>Navigator.of(context).push(MaterialPageRoute(builder:(_)=>page));
+ void room(ManorRoom r)=>visit(ManorRoomDetails(room:r));
+ void category(String c)=>visit(ManorCategory(category:c,onRoom:room));
+ void booking([ManorRoom? room])=>visit(ManorBooking(room:room));
+ void about()=>visit(const ManorAbout());
+ void auth()=>visit(ManorAuth(onSuccess:(email)=>setState(()=>signedInEmail=email)));
+ void select(int tab){setState(()=>selected=tab);Navigator.of(context).popUntil((route)=>route.isFirst);}
+ void menu(){
+   showModalBottomSheet<void>(context:context,showDragHandle:true,isScrollControlled:true,backgroundColor:Colors.white,
+    builder:(sheet)=>SafeArea(child:Padding(padding:const EdgeInsets.fromLTRB(20,12,20,22),
+    child:Column(mainAxisSize:MainAxisSize.min,crossAxisAlignment:CrossAxisAlignment.start,children:[
+      const ManorLogo(size:38),const SizedBox(height:17),
+      ...<({String title,IconData icon,VoidCallback action})>[
+        (title:'Home',icon:Icons.home_outlined,action:()=>select(0)),
+        (title:'About Us',icon:Icons.info_outline,action:about),
+        (title:'Our Rooms',icon:Icons.bed_outlined,action:()=>select(1)),
+        (title:'Standard Rooms',icon:Icons.meeting_room_outlined,action:()=>category('Standard')),
+        (title:'Deluxe Rooms',icon:Icons.star_border,action:()=>category('Deluxe')),
+        (title:'Gallery',icon:Icons.photo_library_outlined,action:()=>select(2)),
+        (title:'Contact Us',icon:Icons.mail_outline,action:()=>select(3)),
+        (title:'Guest Account',icon:Icons.person_outline,action:()=>select(4)),
+      ].map((entry)=>ListTile(leading:Icon(entry.icon,color:ManorStyle.teal,size:21),title:Text(entry.title),
+       onTap:(){Navigator.of(sheet).pop();entry.action();})),
+      const SizedBox(height:8),ManorCta(label:'REQUEST A RESERVATION',icon:Icons.calendar_month_outlined,onTap:(){Navigator.of(sheet).pop();booking();}),
+    ]))));
+ }
+ @override Widget build(BuildContext context) {
+   final pages=<Widget>[
+    ManorHome(onRooms:()=>select(1),onAbout:about,onCategory:category,onRoom:room,onBooking:()=>booking()),
+    ManorRoomCategories(onCategory:category),
+    const ManorGallery(),
+    const ManorContact(),
+    ManorAccount(email:signedInEmail,onLogin:auth,onAbout:about,onLogout:()=>setState(()=>signedInEmail=null)),
+   ];
+   return Scaffold(
+    body:SafeArea(child:Column(children:[
+      ManorTopBar(onMenu:menu,onBook:()=>booking()),
+      Expanded(child:IndexedStack(index:selected,children:pages)),
+    ])),
+    bottomNavigationBar:NavigationBar(
+      height:70,selectedIndex:selected,onDestinationSelected:(value)=>setState(()=>selected=value),
+      labelBehavior:NavigationDestinationLabelBehavior.alwaysShow,
+      destinations:const [
+        NavigationDestination(icon:Icon(Icons.home_outlined),selectedIcon:Icon(Icons.home_rounded),label:'Home'),
+        NavigationDestination(icon:Icon(Icons.bed_outlined),selectedIcon:Icon(Icons.bed_rounded),label:'Rooms'),
+        NavigationDestination(icon:Icon(Icons.photo_library_outlined),selectedIcon:Icon(Icons.photo_library_rounded),label:'Gallery'),
+        NavigationDestination(icon:Icon(Icons.mail_outline),selectedIcon:Icon(Icons.mail_rounded),label:'Contact'),
+        NavigationDestination(icon:Icon(Icons.person_outline),selectedIcon:Icon(Icons.person_rounded),label:'Account'),
+      ],
+    ),
+   );
+ }
+}

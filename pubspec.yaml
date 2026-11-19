@@ -1,11 +1,12 @@
 name: mahogany_manor_prototype
-description: Mahogany Manor Flutter prototype
+description: Premium Mahogany Manor Bed and Breakfast Flutter client prototype
 publish_to: none
-version: 1.0.0+1
+version: 1.1.0+2
 environment:
-  sdk: '>=3.3.0 <4.0.0'
+  sdk: '>=3.5.0 <4.0.0'
 dependencies:
   flutter:
     sdk: flutter
+  google_fonts: ^6.2.1
 flutter:
   uses-material-design: true
