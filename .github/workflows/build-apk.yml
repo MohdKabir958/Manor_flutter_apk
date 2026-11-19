@@ -14,14 +14,22 @@ jobs:
         with:
           channel: stable
       - run: flutter create --project-name mahogany_manor_prototype --platforms android .
+      - name: Install website favicon preparation tools
+        run: python3 -m pip install --user Pillow requests cairosvg
+      - name: Generate Android icon from official website favicon
+        run: python3 scripts/download_launcher_icon.py
       - run: flutter pub get
+      - name: Apply Mahogany Manor app icon
+        run: dart run flutter_launcher_icons
       - name: Add network permission
         run: |
           python3 - <<'PY'
           from pathlib import Path
           p=Path('android/app/src/main/AndroidManifest.xml')
-          s=p.read_text().replace('<application','<uses-permission android:name="android.permission.INTERNET" />\n    <application',1)
-          p.write_text(s)
+          s=p.read_text()
+          if 'android.permission.INTERNET' not in s:
+              s=s.replace('<application','<uses-permission android:name="android.permission.INTERNET" />\n    <application',1)
+              p.write_text(s)
           PY
       - run: flutter build apk --release
       - uses: actions/upload-artifact@v4
