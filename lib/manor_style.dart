@@ -4,8 +4,8 @@ import 'manor_data.dart';
 
 abstract final class ManorStyle {
   static const dark=Color(0xFF252C2D);
-  static const teal=Color(0xFF008E8C);
-  static const tealDeep=Color(0xFF006C6B);
+  static const teal=Color(0xFFC77A63);
+  static const tealDeep=Color(0xFFA55D49);
   static const paper=Color(0xFFFAFAF8);
   static const pale=Color(0xFFF2F4F3);
   static const line=Color(0xFFE4E7E5);
@@ -32,9 +32,13 @@ class ManorPhoto extends StatelessWidget {
   final String url;final double? height;final BorderRadius? radius;final BoxFit fit;
   const ManorPhoto({super.key,required this.url,this.height,this.radius,this.fit=BoxFit.cover});
   @override Widget build(BuildContext context){
-    final view=SizedBox(height:height,width:double.infinity,child:Image.network(url,fit:fit,
-     loadingBuilder:(c,child,progress)=>progress==null?child:Container(color:ManorStyle.pale,alignment:Alignment.center,child:const CircularProgressIndicator(strokeWidth:2,color:ManorStyle.teal)),
-     errorBuilder:(_,__,___)=>Container(color:ManorStyle.dark,alignment:Alignment.center,child:const Icon(Icons.bedroom_parent_outlined,size:56,color:Colors.white70))));
+    Widget errorPhoto()=>Container(color:ManorStyle.dark,alignment:Alignment.center,child:const Icon(Icons.bedroom_parent_outlined,size:56,color:Colors.white70));
+    final Widget picture=url.startsWith('assets/')
+      ? Image.asset(url,fit:fit,errorBuilder:(_,__,___)=>errorPhoto())
+      : Image.network(url,fit:fit,
+         loadingBuilder:(c,child,progress)=>progress==null?child:Container(color:ManorStyle.pale,alignment:Alignment.center,child:const CircularProgressIndicator(strokeWidth:2,color:ManorStyle.teal)),
+         errorBuilder:(_,__,___)=>errorPhoto());
+    final view=SizedBox(height:height,width:double.infinity,child:picture);
     return ClipRRect(borderRadius:radius??BorderRadius.zero,child:view);
   }
 }
